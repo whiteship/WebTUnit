@@ -13,6 +13,8 @@ import java.lang.annotation.Target;
 @Documented
 public @interface DataConfiguration {
 
+	String value() default "webtunit.properties";
+
 	String fileName() default "testData.xml";
 
 }

@@ -11,7 +11,7 @@ public class DefaultDataManagerTest {
 
 	@Test
 	public void findTestDataFileLocation() throws Exception {
-		DefaultDataManager dm = new DefaultDataManager("testData.xml", WebTest.class);
+		DefaultDataManager dm = new DefaultDataManager("testData.xml", "database.properties", WebTest.class);
 		assertEquals("org/opensprout/webtest/testData.xml", dm.testDataFileLocation);
 		assertNotNull(dm.dataset);
 		assertNotNull(dm.dataSource);

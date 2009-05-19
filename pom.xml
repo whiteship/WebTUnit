@@ -133,7 +133,7 @@
 		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>org.springframework.context</artifactId>
+			<artifactId>org.springframework.core</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
@@ -146,7 +146,6 @@
 			<groupId>c3p0</groupId>
 			<artifactId>c3p0</artifactId>
 			<version>0.9.1.2</version>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.hsqldb</groupId>

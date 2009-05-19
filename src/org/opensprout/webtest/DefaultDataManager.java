@@ -1,8 +1,10 @@
 package org.opensprout.webtest;
 
+import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
@@ -20,12 +22,12 @@ import org.opensprout.webtest.exception.TestDataDeleteException;
 import org.opensprout.webtest.exception.TestDataInputException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.datasource.DataSourceUtils;
+
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 public class DefaultDataManager implements DataManager {
 
@@ -39,14 +41,22 @@ public class DefaultDataManager implements DataManager {
 	DataType dataType;
 
 	public DefaultDataManager(DataConfiguration dc, Class<?> klass) {
-		this(getFileName(dc), klass);
+		this(getFileName(dc), getPropertiesName(dc), klass);
 	}
 
-	public DefaultDataManager(String fileName, Class<?> klass) {
+	private static String getFileName(DataConfiguration dc) {
+		return (String) AnnotationUtils.getValue(dc, "fileName");
+	}
+
+	private static String getPropertiesName(DataConfiguration dc) {
+		return (String) AnnotationUtils.getValue(dc, "value");
+	}
+
+	public DefaultDataManager(String fileName, String propertiesName, Class<?> klass) {
 		try {
 			this.dataType = makeDataType(fileName);
 			testDataFileLocation = makeDefaultFileLocation(fileName, klass);
-			dataSource = makeDataSourceFromSpring();
+			dataSource = makeDataSource(propertiesName);
 			dataset = makeDataset();
 			databaseConnection = makeDBConnection();
 		} catch (Exception e) {
@@ -58,7 +68,7 @@ public class DefaultDataManager implements DataManager {
 	private DataType makeDataType(String fileName) {
 		if (fileName.endsWith(".xml"))
 			return DataType.XML;
-		else if(fileName.endsWith(".xls"))
+		else if (fileName.endsWith(".xls"))
 			return DataType.EXEL;
 		throw new IllegalStateException("FILE NAME IS ILLEGAL");
 	}
@@ -84,14 +94,28 @@ public class DefaultDataManager implements DataManager {
 		return makeDataSet(dataType, sourceStream);
 	}
 
-	private DataSource makeDataSourceFromSpring() {
-		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
-				"applicationContext.xml");
-		return applicationContext.getBean("dataSource", DataSource.class);
-	}
+	private DataSource makeDataSource(String propertiesName) {
+		Properties properties = new Properties();
+		java.net.URL url = ClassLoader.getSystemResource(propertiesName);
+		try {
+			properties.load(url.openStream());
+		} catch (IOException e) {
+			logger.debug("PROPERTIES FILE IS ILLEGAL");
+			throw new IllegalStateException("PROPERTIES FILE IS ILLEGAL", e);
+		}
 
-	private static String getFileName(DataConfiguration dc) {
-		return (String) AnnotationUtils.getValue(dc, "fileName");
+		ComboPooledDataSource dataSource = new ComboPooledDataSource();
+		try {
+			dataSource.setDriverClass(properties.getProperty("db.driver"));
+			dataSource.setJdbcUrl(properties.getProperty("db.url"));
+			dataSource.setUser(properties.getProperty("db.username"));
+			dataSource.setPassword(properties.getProperty("db.password"));
+		} catch (PropertyVetoException e) {
+			logger.debug("PROPERTIES VALUE IS ILLEGAL");
+			throw new IllegalArgumentException("PROPERTIES VALUE IS ILLEGAL", e);
+		}
+
+		return dataSource;
 	}
 
 	private IDataSet makeDataSet(DataType dataType, InputStream sourceStream)
