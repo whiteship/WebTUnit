@@ -24,8 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.CannotGetJdbcConnectionException;
-import org.springframework.jdbc.datasource.DataSourceUtils;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
@@ -84,8 +82,8 @@ public class DefaultDataManager implements DataManager {
 	}
 
 	private DatabaseConnection makeDBConnection()
-			throws CannotGetJdbcConnectionException, DatabaseUnitException {
-		return new DatabaseConnection(DataSourceUtils.getConnection(dataSource));
+			throws SQLException, DatabaseUnitException {
+		return new DatabaseConnection(dataSource.getConnection());
 	}
 
 	private IDataSet makeDataset() throws IOException, DataSetException {

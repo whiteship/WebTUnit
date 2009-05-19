@@ -32,7 +32,7 @@ public class DefaultWarManager implements WarManager {
 	int port;
 
 	public DefaultWarManager(WarConfiguration wc) {
-		this((String) AnnotationUtils.getValue(wc, "appName"),
+		this((String) AnnotationUtils.getValue(wc, "value"),
 				(Integer) AnnotationUtils.getValue(wc, "port"));
 	}
 

@@ -4,17 +4,9 @@
 	<groupId>org.opensprout</groupId>
 	<artifactId>webtunit</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0-M2-SNAPSHOT</version>
+	<version>1.0-M1</version>
 	<name>webtunit</name>
 	<url>http://maven.apache.org</url>
-
-	<distributionManagement>
-		<repository>
-			<id>snapshot</id>
-			<name>OpenSprout</name>
-			<url>http://www.opensprout.org/nexus/content/repositories/opensprout-snapshots/</url>
-		</repository>
-	</distributionManagement>
 
 	<properties>
 		<java.version>1.5</java.version>
@@ -136,11 +128,6 @@
 			<artifactId>org.springframework.core</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>org.springframework.jdbc</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
 		<!-- DB -->
 		<dependency>
 			<groupId>c3p0</groupId>
@@ -221,4 +208,18 @@
 			<url>http://www.opensprout.org/nexus/content/groups/public</url>
 		</repository>
 	</repositories>
+
+	<distributionManagement>
+		<repository>
+			<id>opensprout</id>
+			<name>OpenSprout</name>
+			<url>http://www.opensprout.org/nexus/content/repositories/opensprout-release/</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshot</id>
+			<name>OpenSprout</name>
+			<url>http://www.opensprout.org/nexus/content/repositories/opensprout-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 </project>
