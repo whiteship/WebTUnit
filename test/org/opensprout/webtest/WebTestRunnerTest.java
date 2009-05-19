@@ -15,7 +15,7 @@ import org.opensprout.webtest.exception.WarPackagingException;
 import org.opensprout.webtest.exception.WarUnDeployingException;
 import org.opensprout.webtest.exception.WebTestException;
 
-@WarConfiguration(appName = "springsprout")
+@WarConfiguration("springsprout")
 public class WebTestRunnerTest {
 
 	WebTestRunnerStub runner;

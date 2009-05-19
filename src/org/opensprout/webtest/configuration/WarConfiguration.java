@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Documented
 public @interface WarConfiguration {
 
-	String appName();
+	String value();
 
 	int port() default 8080;
 
