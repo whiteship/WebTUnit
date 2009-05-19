@@ -10,8 +10,6 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
-import org.opensprout.webtest.configuration.DataConfiguration;
-import org.opensprout.webtest.configuration.WarConfiguration;
 import org.opensprout.webtest.configuration.WebTest;
 import org.opensprout.webtest.exception.TestDataInputException;
 import org.opensprout.webtest.exception.WarDeployingException;
@@ -29,28 +27,6 @@ public class WebTestRunnerStub extends BlockJUnit4ClassRunner {
 
 	public WebTestRunnerStub(Class<?> klass) throws InitializationError {
 		super(klass);
-
-		logger.debug("LOADING TEST CONFIGURATIONS....");
-		WarConfiguration wc = klass.getAnnotation(WarConfiguration.class);
-		if (wc == null)
-			throw new IllegalStateException("WEB TEST MUST HAVE WAR CONFIGURATION!");
-		logger.debug("SUCCESS! WAR CONFIGURATIONS LOADING....");
-
-		DataConfiguration dc = klass.getAnnotation(DataConfiguration.class);
-		if (dc != null) {
-			logger.debug("SUCCESS! DATA CONFIGURATIONS LOADING....");
-			dataManager = createDataManager(dc);
-		}
-
-		warManager = createWarManager(wc);
-	}
-
-	private WarManager createWarManager(WarConfiguration wc) {
-		return new DefaultWarManager(wc);
-	}
-
-	private DataManager createDataManager(DataConfiguration dc) {
-		return new DefaultDataManager(dc);
 	}
 
 	@Override

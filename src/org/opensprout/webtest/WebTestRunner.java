@@ -33,7 +33,7 @@ public class WebTestRunner extends BlockJUnit4ClassRunner {
 		DataConfiguration dc = klass.getAnnotation(DataConfiguration.class);
 		if (dc != null) {
 			logger.debug("SUCCESS! DATA CONFIGURATIONS LOADING....");
-			dataManager = createDataManager(dc);
+			dataManager = createDataManager(dc, klass);
 		}
 
 		warManager = createWarManager(wc);
@@ -43,8 +43,8 @@ public class WebTestRunner extends BlockJUnit4ClassRunner {
 		return new DefaultWarManager(wc);
 	}
 
-	private DataManager createDataManager(DataConfiguration dc) {
-		return new DefaultDataManager(dc);
+	private DataManager createDataManager(DataConfiguration dc, Class<?> klass) {
+		return new DefaultDataManager(dc, klass);
 	}
 
 	@Override

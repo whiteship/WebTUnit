@@ -13,8 +13,6 @@ import java.lang.annotation.Target;
 @Documented
 public @interface DataConfiguration {
 
-	DataType dataType();
-
-	String location();
+	String fileName() default "testData.xml";
 
 }

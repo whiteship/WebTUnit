@@ -4,14 +4,15 @@
 	<groupId>org.opensprout</groupId>
 	<artifactId>webtunit</artifactId>
 	<packaging>jar</packaging>
-	<version>0.1</version>
+	<version>1.0-M2-SNAPSHOT</version>
 	<name>webtunit</name>
 	<url>http://maven.apache.org</url>
+
 	<distributionManagement>
 		<repository>
-			<id>opensprout</id>
+			<id>snapshot</id>
 			<name>OpenSprout</name>
-			<url>http://www.opensprout.org/nexus/content/repositories/opensprout-release/</url>
+			<url>http://www.opensprout.org/nexus/content/repositories/opensprout-snapshots/</url>
 		</repository>
 	</distributionManagement>
 
@@ -140,6 +141,19 @@
 			<artifactId>org.springframework.jdbc</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
+		<!-- DB -->
+		<dependency>
+			<groupId>c3p0</groupId>
+			<artifactId>c3p0</artifactId>
+			<version>0.9.1.2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hsqldb</groupId>
+			<artifactId>com.springsource.org.hsqldb</artifactId>
+			<version>1.8.0.9</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -185,6 +199,18 @@
 					<source>1.5</source>
 					<target>1.5</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

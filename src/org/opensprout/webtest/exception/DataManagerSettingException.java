@@ -9,4 +9,8 @@ public class DataManagerSettingException extends WebTestException {
 	public DataManagerSettingException() {
 	}
 
+	public DataManagerSettingException(Exception e) {
+		super(e);
+	}
+
 }

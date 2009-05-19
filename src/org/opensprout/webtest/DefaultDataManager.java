@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
@@ -23,35 +24,74 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
 public class DefaultDataManager implements DataManager {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	DataSource dataSource;
 	IDataSet dataset;
 	DatabaseConnection databaseConnection;
 
-	public DefaultDataManager(DataConfiguration dc) {
-		this((String) AnnotationUtils.getValue(dc, "location"),
-				(DataType) AnnotationUtils.getValue(dc, "dataType"));
+	DataSource dataSource;
+	String testDataFileLocation;
+	DataType dataType;
+
+	public DefaultDataManager(DataConfiguration dc, Class<?> klass) {
+		this(getFileName(dc), klass);
 	}
 
-	public DefaultDataManager(String location, DataType dataType) {
-		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
-				"applicationContext.xml");
-		dataSource = applicationContext.getBean("dataSource", DataSource.class);
-		InputStream sourceStream;
+	public DefaultDataManager(String fileName, Class<?> klass) {
 		try {
-			sourceStream = new ClassPathResource(location).getInputStream();
-			dataset = makeDataSet(dataType, sourceStream);
-			databaseConnection = new DatabaseConnection(DataSourceUtils
-					.getConnection(dataSource));
+			this.dataType = makeDataType(fileName);
+			testDataFileLocation = makeDefaultFileLocation(fileName, klass);
+			dataSource = makeDataSourceFromSpring();
+			dataset = makeDataset();
+			databaseConnection = makeDBConnection();
 		} catch (Exception e) {
 			logger.debug("DATA MANAGER SETTING ERROR", e);
-			throw new DataManagerSettingException("DATA MANAGER SETTING ERROR");
+			throw new DataManagerSettingException(e);
 		}
+	}
+
+	private DataType makeDataType(String fileName) {
+		if (fileName.endsWith(".xml"))
+			return DataType.XML;
+		else if(fileName.endsWith(".xls"))
+			return DataType.EXEL;
+		throw new IllegalStateException("FILE NAME IS ILLEGAL");
+	}
+
+	private String makeDefaultFileLocation(String fileName, Class<?> klass) {
+		String result = fileName;
+		String defaultPackage = klass.getPackage().getName().replace(".", "/");
+
+		if (result.contains("/"))
+			return result;
+		else
+			return defaultPackage + "/" + result;
+	}
+
+	private DatabaseConnection makeDBConnection()
+			throws CannotGetJdbcConnectionException, DatabaseUnitException {
+		return new DatabaseConnection(DataSourceUtils.getConnection(dataSource));
+	}
+
+	private IDataSet makeDataset() throws IOException, DataSetException {
+		InputStream sourceStream = new ClassPathResource(testDataFileLocation)
+				.getInputStream();
+		return makeDataSet(dataType, sourceStream);
+	}
+
+	private DataSource makeDataSourceFromSpring() {
+		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
+				"applicationContext.xml");
+		return applicationContext.getBean("dataSource", DataSource.class);
+	}
+
+	private static String getFileName(DataConfiguration dc) {
+		return (String) AnnotationUtils.getValue(dc, "fileName");
 	}
 
 	private IDataSet makeDataSet(DataType dataType, InputStream sourceStream)
